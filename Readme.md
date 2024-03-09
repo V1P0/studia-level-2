@@ -1,0 +1,1 @@
+# Repo na studia magisterskie
