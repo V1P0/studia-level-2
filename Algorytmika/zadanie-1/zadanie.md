@@ -1,0 +1,1 @@
+Napisz w języku C program, który nie ma operacji wejściowych i generuje swoją własną kopię.
