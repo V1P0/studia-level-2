@@ -4,4 +4,4 @@ Napisz w języku C program, który nie ma operacji wejściowych i generuje swoj�
 
 [kodzik](https://stackoverflow.com/questions/10238670/c-c-program-that-prints-its-own-source-code-as-its-output) <- stąd kradzione
 
-Odpalanie: gcc
+Odpalanie: `gcc main.c -o main`

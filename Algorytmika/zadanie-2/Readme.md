@@ -6,6 +6,8 @@ Jakie funkcje języka Python służą do tego celu?
 
 kod: part1.c
 
+odpalanie: `gcc part1.c -o part1`
+
 ### Zadanie w pythonie
 
 kod: part2.py
