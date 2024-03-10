@@ -1,0 +1,1 @@
+Zaimplementuj algorytm Rabina-Karpa wykrywania obecności wzorca w tekście.
