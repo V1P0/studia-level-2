@@ -1,25 +1,44 @@
-def rabin_karp(pattern, text):
-    pattern_len = len(pattern)
-    text_len = len(text)
-    pattern_hash = hash(pattern)
-    text_hash = hash(text[:pattern_len])
+def rabin_karp(text, pattern, d, q):
+    n = len(text)
+    m = len(pattern)
+    h = pow(d, m-1) % q
+    p = 0
+    t = 0
+    result = []
 
-    for i in range(text_len - pattern_len + 1):
-        if pattern_hash == text_hash and pattern == text[i:i+pattern_len]:
-            return i
-        if i < text_len - pattern_len:
-            text_hash = (text_hash - ord(text[i])) // 2 + ord(text[i+pattern_len]) // 2
+    for i in range(m):
+        p = (d*p + ord(pattern[i])) % q
+        t = (d*t + ord(text[i])) % q
 
-    return -1
+    for s in range(n-m+1):
+        if p == t: 
+            match = True
+            for i in range(m):
+                if pattern[i] != text[s+i]:
+                    match = False
+                    break
+            if match:
+                result = result + [s]
+
+        if s < n-m:
+            t = (t-h*ord(text[s])) % q #
+            t = (t*d + ord(text[s+m])) % q 
+            t = (t+q) % q
+
+    return result
 
 def main():
     pattern = "abc"
-    text = "abracadabra"
-    result = rabin_karp(pattern, text)
-    if result == -1:
+    text = "abcracadabcra"
+    d = 256  # Assuming the input is ASCII characters
+    q = 1000000007  # A large prime number
+    result = rabin_karp(text, pattern, d, q)
+    if not result:
         print("Pattern not found in text")
     else:
-        print(f"Pattern found at index {result}")
+        for index in result:
+            print(f"Pattern found at index {index}")
+
 
 if __name__ == "__main__":
     main()
