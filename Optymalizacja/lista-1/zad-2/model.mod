@@ -1,4 +1,5 @@
-param n; # Przyjmujemy 12 miast na potrzeby przykładu
+# Mateusz Jończak
+param n;
 
 set CITIES := 1..n; # Zestaw miast numerowanych od 1 do n
 set TYPES := {'Standard', 'VIP'}; # Typy camperów

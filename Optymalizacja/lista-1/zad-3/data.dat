@@ -1,0 +1,38 @@
+param minBuy :=
+1 2000
+2 3000
+3 4000;
+
+param maxBuy :=
+1 6000
+2 5000
+3 7000;
+
+param value :=
+'A' 3
+'B' 2.5
+'C' 0.6
+'D' 0.5;
+
+param price :=
+1 2.1
+2 1.6
+3 1.0;
+
+param wasteRatio :=
+1 'A' 0.1
+1 'B' 0.2
+2 'A' 0.2
+2 'B' 0.2
+3 'A' 0.4
+3 'B' 0.5;
+
+param wasteCost :=
+1 'A' 0.1
+1 'B' 0.05
+2 'A' 0.1
+2 'B' 0.05
+3 'A' 0.2
+3 'B' 0.4;
+
+end;

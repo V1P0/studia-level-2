@@ -1,3 +1,4 @@
+# Mateusz Jończak
 param n, integer, > 0;
 
 set I := 1..n;
