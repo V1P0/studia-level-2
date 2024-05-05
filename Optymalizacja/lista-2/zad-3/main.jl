@@ -23,8 +23,8 @@ model = Model(GLPK.Optimizer)
 @objective(model, Min, Cmax)
 
 for i in 1:n
-    @constraint(model, sum(x[i, j] for j in 1:n if j != i) == 1)  # Each task i must precede exactly one task j
-    @constraint(model, sum(x[j, i] for j in 1:n if j != i) == 1)  # Each task j must be preceded by exactly one task i
+    @constraint(model, sum(x[i, j] for j in 1:n if j != i) == 1) # Each task is sequenced once 
+    @constraint(model, sum(x[j, i] for j in 1:n if j != i) == 1) # Each position is assigned to one task+
 end
 
 for tp in 1:n
