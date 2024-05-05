@@ -2,33 +2,50 @@ using JuMP, GLPK, Plots
 
 # Sample data
 n = 5  # Number of tasks
-a = [2, 4, 6, 8, 10]  # Processing times on P1
-b = [1, 3, 5, 7, 9]   # Processing times on P2
-c = [5, 7, 9, 11, 13]  # Processing times on P3
+a = [4, 7, 6, 8, 10]  # Processing times on P1
+b = [3, 1, 5, 7, 9]   # Processing times on P2
+c = [7, 5, 9, 11, 13]  # Processing times on P3
+
+M = sum(a) + sum(b) + sum(c)  # This is often a safe estimate for many scheduling problems
 
 # Initialize the model with GLPK solver
 model = Model(GLPK.Optimizer)
 
-# Decision variables for start and completion times
-@variable(model, start[1:n, 1:3] >= 0)
+# Decision variables
+@variable(model, x[1:n, 1:n, 1:3], Bin)  # Task sequencing variables
+@variable(model, start[1:n, 1:3] >= 0)  # Start times
 @variable(model, Cmax)
 
 # Objective: Minimize the makespan
 @objective(model, Min, Cmax)
 
-# Constraints
 for i in 1:n
-    # Processing time constraints
-    @constraint(model, start[i, 1] + a[i] <= start[i, 2])  # Task must finish on P1 before starting on P2
-    @constraint(model, start[i, 2] + b[i] <= start[i, 3])  # Task must finish on P2 before starting on P3
-    @constraint(model, start[i, 3] + c[i] <= Cmax)         # Completion time of each task on P3
-
-    # Ensure machines process tasks sequentially
-    if i > 1
-        @constraint(model, start[i-1, 1] + a[i-1] <= start[i, 1])
-        @constraint(model, start[i-1, 2] + b[i-1] <= start[i, 2])
-        @constraint(model, start[i-1, 3] + c[i-1] <= start[i, 3])
+    for k in 1:3
+        @constraint(model, sum(x[i, j, k] for j in 1:n if j != i) == 1)  # Each task i must precede exactly one task j
+        @constraint(model, sum(x[j, i, k] for j in 1:n if j != i) == 1)  # Each task j must be preceded by exactly one task i
     end
+end
+
+for tp in 1:n
+    for ta in (tp+1):n
+        for i in 1:n
+            for j in 1:n
+                if i != j
+                    @constraint(model, (start[i, 1]+a[i]) <= start[j, 1] + M*(1-x[i, tp, 1]) + M*(1-x[j, ta, 1]))
+                    @constraint(model, (start[i, 2]+b[i]) <= start[j, 2] + M*(1-x[i, tp, 2]) + M*(1-x[j, ta, 2]))
+                    @constraint(model, (start[i, 3]+c[i]) <= start[j, 3] + M*(1-x[i, tp, 3]) + M*(1-x[j, ta, 3]))
+                end
+            end
+        end
+    end
+end
+
+# Start time and sequence constraints
+for i in 1:n
+    # Processing constraints
+    @constraint(model, start[i, 2] >= start[i, 1] + a[i])
+    @constraint(model, start[i, 3] >= start[i, 2] + b[i])
+    @constraint(model, start[i, 3] + c[i] <= Cmax)
 end
 
 # Solve the model
@@ -40,7 +57,7 @@ starts = [value.(start[i,j]) for i in 1:n, j in 1:3]
 
 # Function to plot Gantt Chart
 function plot_gantt(starts, a, b, c)
-    p = plot(xticks=false, yticks=1:n, yflip=true, legend=false, xlabel="Time", ylabel="Task")
+    p = plot(xticks=true, yticks=1:n, yflip=true, legend=false, xlabel="Time", ylabel="Task")
     for i in 1:n
         plot!(p, [starts[i,1], starts[i,1]+a[i]], [i, i], line=(10, :solid, palette(:blues)[1]), label="")
         plot!(p, [starts[i,2], starts[i,2]+b[i]], [i, i], line=(10, :solid, palette(:greens)[1]), label="")
