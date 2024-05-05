@@ -2,18 +2,21 @@ using JuMP, GLPK, Plots
 
 # Sample data
 n = 5  # Number of tasks
-a = [4, 7, 6, 8, 10]  # Processing times on P1
-b = [3, 1, 5, 7, 9]   # Processing times on P2
-c = [7, 5, 9, 11, 13]  # Processing times on P3
+p = 3 # number of processors
+a = [
+    [4, 7, 6, 8, 10]  # Processing times on P1
+    [3, 1, 5, 7, 9]   # Processing times on P2
+    [7, 5, 9, 11, 13] # Processing times on P3
+    ]  
 
-M = sum(a) + sum(b) + sum(c)  # This is often a safe estimate for many scheduling problems
+M = sum([sum(i) for i in a])
 
 # Initialize the model with GLPK solver
 model = Model(GLPK.Optimizer)
 
 # Decision variables
 @variable(model, x[1:n, 1:n], Bin)  # Task sequencing variables
-@variable(model, start[1:n, 1:3] >= 0)  # Start times
+@variable(model, start[1:n, 1:p] >= 0)  # Start times
 @variable(model, Cmax)
 
 # Objective: Minimize the makespan
@@ -29,9 +32,9 @@ for tp in 1:n
         for i in 1:n
             for j in 1:n
                 if i != j
-                    @constraint(model, (start[i, 1]+a[i]) <= start[j, 1] + M*(1-x[i, tp]) + M*(1-x[j, ta]))
-                    @constraint(model, (start[i, 2]+b[i]) <= start[j, 2] + M*(1-x[i, tp]) + M*(1-x[j, ta]))
-                    @constraint(model, (start[i, 3]+c[i]) <= start[j, 3] + M*(1-x[i, tp]) + M*(1-x[j, ta]))
+                    for pr in 1:p
+                        @constraint(model, (start[i, pr]+a[pr, i]) <= start[j, pr] + M*(1-x[i, tp]) + M*(1-x[j, ta]))
+                    end
                 end
             end
         end
@@ -41,9 +44,10 @@ end
 # Start time and sequence constraints
 for i in 1:n
     # Processing constraints
-    @constraint(model, start[i, 2] >= start[i, 1] + a[i])
-    @constraint(model, start[i, 3] >= start[i, 2] + b[i])
-    @constraint(model, start[i, 3] + c[i] <= Cmax)
+    for pr in 1:(p-1)
+        @constraint(model, start[i, pr+1] >= start[i, pr] + a[pr, i])
+    end
+    @constraint(model, start[i, p] + a[p, i] <= Cmax)
 end
 
 # Solve the model
