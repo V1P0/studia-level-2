@@ -4,10 +4,10 @@ using JuMP, GLPK, Plots
 n = 5  # Number of tasks
 p = 3 # number of processors
 a = [
-    [4, 7, 6, 8, 10]  # Processing times on P1
-    [3, 1, 5, 7, 9]   # Processing times on P2
-    [7, 5, 9, 11, 13] # Processing times on P3
-    ]  
+    4  7  6  8  10  # Processing times on P1
+    3  1  5  7  9   # Processing times on P2
+    7  5  9  11  13 # Processing times on P3
+    ]   
 
 M = sum([sum(i) for i in a])
 
@@ -58,15 +58,15 @@ println("Optimal Schedule Length: ", objective_value(model))
 starts = [value.(start[i,j]) for i in 1:n, j in 1:3]
 
 # Function to plot Gantt Chart
-function plot_gantt(starts, a, b, c)
+function plot_gantt(starts, a)
     p = plot(xticks=true, yticks=1:n, yflip=true, legend=false, xlabel="Time", ylabel="Task")
     for i in 1:n
-        plot!(p, [starts[i,1], starts[i,1]+a[i]], [i, i], line=(10, :solid, palette(:blues)[1]), label="")
-        plot!(p, [starts[i,2], starts[i,2]+b[i]], [i, i], line=(10, :solid, palette(:greens)[1]), label="")
-        plot!(p, [starts[i,3], starts[i,3]+c[i]], [i, i], line=(10, :solid, palette(:reds)[1]), label="")
+        plot!(p, [starts[i,1], starts[i,1]+a[1, i]], [i, i], line=(10, :solid, palette(:blues)[1]), label="")
+        plot!(p, [starts[i,2], starts[i,2]+a[2, i]], [i, i], line=(10, :solid, palette(:greens)[1]), label="")
+        plot!(p, [starts[i,3], starts[i,3]+a[3, i]], [i, i], line=(10, :solid, palette(:reds)[1]), label="")
     end
     savefig(p, "myplot.png")  # Saves as PNG
 end
 
 # Call the function to plot the Gantt chart
-plot_gantt(starts, a, b, c)
+plot_gantt(starts, a)
