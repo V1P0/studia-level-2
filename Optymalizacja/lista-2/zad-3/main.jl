@@ -12,7 +12,7 @@ M = sum(a) + sum(b) + sum(c)  # This is often a safe estimate for many schedulin
 model = Model(GLPK.Optimizer)
 
 # Decision variables
-@variable(model, x[1:n, 1:n, 1:3], Bin)  # Task sequencing variables
+@variable(model, x[1:n, 1:n], Bin)  # Task sequencing variables
 @variable(model, start[1:n, 1:3] >= 0)  # Start times
 @variable(model, Cmax)
 
@@ -20,10 +20,8 @@ model = Model(GLPK.Optimizer)
 @objective(model, Min, Cmax)
 
 for i in 1:n
-    for k in 1:3
-        @constraint(model, sum(x[i, j, k] for j in 1:n if j != i) == 1)  # Each task i must precede exactly one task j
-        @constraint(model, sum(x[j, i, k] for j in 1:n if j != i) == 1)  # Each task j must be preceded by exactly one task i
-    end
+    @constraint(model, sum(x[i, j] for j in 1:n if j != i) == 1)  # Each task i must precede exactly one task j
+    @constraint(model, sum(x[j, i] for j in 1:n if j != i) == 1)  # Each task j must be preceded by exactly one task i
 end
 
 for tp in 1:n
@@ -31,9 +29,9 @@ for tp in 1:n
         for i in 1:n
             for j in 1:n
                 if i != j
-                    @constraint(model, (start[i, 1]+a[i]) <= start[j, 1] + M*(1-x[i, tp, 1]) + M*(1-x[j, ta, 1]))
-                    @constraint(model, (start[i, 2]+b[i]) <= start[j, 2] + M*(1-x[i, tp, 2]) + M*(1-x[j, ta, 2]))
-                    @constraint(model, (start[i, 3]+c[i]) <= start[j, 3] + M*(1-x[i, tp, 3]) + M*(1-x[j, ta, 3]))
+                    @constraint(model, (start[i, 1]+a[i]) <= start[j, 1] + M*(1-x[i, tp]) + M*(1-x[j, ta]))
+                    @constraint(model, (start[i, 2]+b[i]) <= start[j, 2] + M*(1-x[i, tp]) + M*(1-x[j, ta]))
+                    @constraint(model, (start[i, 3]+c[i]) <= start[j, 3] + M*(1-x[i, tp]) + M*(1-x[j, ta]))
                 end
             end
         end
