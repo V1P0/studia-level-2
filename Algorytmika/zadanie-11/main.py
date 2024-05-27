@@ -1,39 +1,16 @@
-import random
-import copy
+import numpy as np
 
-def karger_min_cut(graph):
-    while len(graph) > 2:
-        v = random.choice(list(graph.keys()))
-        w = random.choice(graph[v])
-        contract(graph, v, w)
-    return len(list(graph.values())[0])
+def monte_carlo_approximation(n_samples=100000):
+    count = 0
+    for _ in range(n_samples):
+        x = np.random.uniform(0, np.pi)
+        y = np.random.uniform(0, 1)
 
-def contract(graph, v, w):
-    for node in graph[w]:
-        if node != v:
-            graph[v].append(node)
-        graph[node].remove(w)
-        if node != v:
-            graph[node].append(v)
-    del graph[w]
+        if y <= np.sin(x):
+            count += 1
 
-# Test the function with a simple graph
-graph = {
-    'a': ['b', 'c'],
-    'b': ['a', 'd'],
-    'c': ['a', 'd'],
-    'd': ['b', 'c']
-}
+    integral_approximation = (count / n_samples) * np.pi
 
-min_cut = karger_min_cut(copy.deepcopy(graph))
-print(f"Minimum cut of the graph is {min_cut}")
+    return integral_approximation
 
-graph = {
-   'a': ['b', 'c'],
-   'b': ['a', 'd'],
-   'c': ['a', 'd'],
-   'd': ['b', 'c', 'e'],
-   'e': ['d']
-}
-min_cut = karger_min_cut(copy.deepcopy(graph))
-print
+print(monte_carlo_approximation())

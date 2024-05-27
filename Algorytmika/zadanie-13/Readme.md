@@ -1,0 +1,1 @@
+Zaimplementuj metodę "stratified sampling" dla przybliżania wartości całki \($\int_a^b f dx$\) i przetestuj jej skuteczność dla wyznaczania \($\int_0^1 \sqrt{1 - x^2}dx$\). Pamiętaj o zastosowaniu możliwie dobrego generatora liczb pseudo-losowych. Zastosuj następnie metodę przeciwstawnych elementów (antithetic variaty method) do wyznaczenia całki \($\int_0^1 \sqrt{1 - x^2}dx$\).
