@@ -1,22 +1,47 @@
+class Graph:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = {}
 
-def derandomized_cut(G):
-    # Sort vertices by degree
-    vertices = sorted(G.nodes, key=G.degree, reverse=True)
+    def add_edge(self, u, v):
+        if u not in self.graph:
+            self.graph[u] = []
+        if v not in self.graph:
+            self.graph[v] = []
+        self.graph[u].append(v)
+        self.graph[v].append(u)
 
-    # Initialize empty subsets
-    S1, S2 = set(), set()
+    def derandomize_cut(self):
+        S = set()
+        T = set(self.graph.keys())
+        expected_value = {}
 
-    # Initialize counts of edges in each subset
-    E1, E2 = 0, 0
+        # Calculate expected values
+        for v in self.graph:
+            expected_value[v] = len(self.graph[v]) / 2
 
-    # Assign vertices to subsets
-    for v in vertices:
-        if E1 < E2:
-            S1.add(v)
-            E1 += G.degree(v)
-        else:
-            S2.add(v)
-            E2 += G.degree(v)
+        # Derandomize - assign vertices to sets
+        for v in self.graph:
+            sum_incident_S = sum(1 for neighbor in self.graph[v] if neighbor in S)
+            if sum_incident_S < expected_value[v]:
+                S.add(v)
+                T.remove(v)
+            else:
+                T.add(v)
+                S.discard(v)
 
-    # Return the cut
-    return S1, S2
+        return S, T
+
+# Example usage
+graph = Graph(6)
+graph.add_edge(0, 1)
+graph.add_edge(0, 2)
+graph.add_edge(1, 2)
+graph.add_edge(1, 3)
+graph.add_edge(2, 4)
+graph.add_edge(3, 4)
+graph.add_edge(3, 5)
+
+S, T = graph.derandomize_cut()
+print("Set S:", S)
+print("Set T:", T)
