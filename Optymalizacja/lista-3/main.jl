@@ -163,7 +163,6 @@ function Experiment()
     # for each file DO
     for file = 1:files
         name = prefix * string(file) * ".txt" # string concat
-        #print(file, " ")
         f = open(name, "r")
         line = readline(f)
         tests = parse(Int, line)
@@ -224,7 +223,6 @@ function Experiment()
                 end
             end
 
-        # Finally aprox problem
         name = results * string(file) * "-" * string(i) * ".csv"
         aprox(job_time, job_cost, jobs, machines, machine_max_work_time, graph, name)
         end
