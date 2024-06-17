@@ -1,0 +1,1 @@
+Oprogramuj procedurę generowania ciągu chwil w których algorytm R Vittera aktualizuje wartość licznika. Przetestuj ją generując ciągi długości 50.
