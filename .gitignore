@@ -1,0 +1,22 @@
+# Python cache and virtual environment directories
+**/__pycache__/
+**/*.py[cod]
+**/*.pyo
+**/*.pyd
+**/*.pdb
+**/*.egg
+**/*.egg-info/
+**/dist/
+**/build/
+**/*.egg-info/
+**/*.eggs/
+**/*.whl
+**/*.manifest
+**/*.spec
+
+# Virtual environment
+**/venv/
+**/ENV/
+**/env/
+**/venv.bak/
+**/venv.bak/
