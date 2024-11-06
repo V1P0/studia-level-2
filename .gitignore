@@ -20,3 +20,10 @@
 **/env/
 **/venv.bak/
 **/venv.bak/
+
+# vscode
+.vscode/
+
+Krypto/lista1-md5/subprojects/*
+Krypto/lista1-md5/builddir
+Krypto/lista1-md5/compile
