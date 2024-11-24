@@ -3,36 +3,35 @@ import hashlib
 import heapq
 
 def kmv_cardinality(stream, k):
-    h = hashlib.md5()
-    L1, L2 = [], []
+    X = [1 for _ in range(k)]
 
     for element in stream:
-        # Hashowanie elementu do wartości z przedziału (0,1]
-        encoded_element = str(element).encode('utf-8')
-        h.update(encoded_element)
-        hash_value = int(h.hexdigest(), 16)
-        u = hash_value / 2**127  # Normalizacja do przedziału [0,1)
+        u = int(hashlib.md5(str(element).encode()).hexdigest(), 16) / (2**128-1)
         if u == 0:
-            u = 1e-10  # Unikamy zera
-        # Jeśli mamy mniej niż k wartości, dodajemy do kopca
-        if(random.random() < 0.5):
-            L = L1
-        else:
-            L = L2
-        if len(L) < k/2:
-            heapq.heappush(L, -u)  # Używamy kopca maksymalnego
-        else:
-            # Jeśli nowy hash jest mniejszy niż największy w kopcu, zastępujemy go
-            if u < -L[0]:
-                heapq.heappushpop(L, -u)
+            u = 1e-10
+        if u < X[k-1] and u not in X:
+            X.append(u)
+            X.sort()
+            X.pop(-1)
+    
+    L = X.count(1)
+    if L > 0:
+        return k - L
+    else:
+        return (k-1)/X[k-1]
 
-    if len(L1) + len(L2) < k:
-        print("Za mało unikalnych elementów w strumieniu.")
-        return len(L1) + len(L2)
+def count(stream, k):
+    s1, s2 = [], []
+    random.seed(42069)
 
-    R = -max(L1[0], L2[0])  # k-ta najmniejsza wartość hash
-    estimate = (k - 1) / R
-    return estimate
+    for v in stream:
+        if random.random() <0.5:
+            s1.append(v)
+        else:
+            s2.append(v)
+    return (kmv_cardinality(s1, k//2) + kmv_cardinality(s2, k//2)) / 2
+
+
 
 def test_kmv():
     import matplotlib.pyplot as plt
@@ -46,10 +45,10 @@ def test_kmv():
         # Generowanie strumienia z N unikalnymi elementami
         stream = list(range(N))
         # Dodanie duplikatów do strumienia
-        stream.extend(random.choices(stream, k=N))
+        stream.extend(random.choices(stream, k=5*N))
         random.shuffle(stream)
         # Szacowanie liczności unikalnych elementów
-        estimate = kmv_cardinality(stream, k)
+        estimate = count(stream, k)
         estimated_cardinalities.append(estimate)
         print(f"Prawdziwa liczność: {N}, Szacowana liczność: {estimate:.2f}")
 

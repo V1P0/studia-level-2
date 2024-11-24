@@ -3,32 +3,23 @@ import hashlib
 import heapq
 
 def kmv_cardinality(stream, k):
-    max_heap = []
-    h = hashlib.md5()
+    X = [1 for _ in range(k)]
 
     for element in stream:
-        # Hashowanie elementu do wartości z przedziału (0,1]
-        encoded_element = str(element).encode('utf-8')
-        h.update(encoded_element)
-        hash_value = int(h.hexdigest(), 16)
-        u = hash_value / 2**127  # Normalizacja do przedziału [0,1)
+        u = int(hashlib.md5(str(element).encode()).hexdigest(), 16) / (2**128-1)
         if u == 0:
-            u = 1e-10  # Unikamy zera
-        # Jeśli mamy mniej niż k wartości, dodajemy do kopca
-        if len(max_heap) < k:
-            heapq.heappush(max_heap, -u)  # Używamy kopca maksymalnego
-        else:
-            # Jeśli nowy hash jest mniejszy niż największy w kopcu, zastępujemy go
-            if u < -max_heap[0]:
-                heapq.heappushpop(max_heap, -u)
+            u = 1e-10
+        if u < X[k-1] and u not in X:
+            X.append(u)
+            X.sort()
+            X.pop(-1)
+    
+    L = X.count(1)
+    if L > 0:
+        return k - L
+    else:
+        return (k-1)/X[k-1]
 
-    if len(max_heap) < k:
-        print("Za mało unikalnych elementów w strumieniu.")
-        return len(max_heap)
-
-    R = -max_heap[0]  # k-ta najmniejsza wartość hash
-    estimate = (k - 1) / R
-    return estimate
 
 def test_kmv():
     import matplotlib.pyplot as plt
@@ -42,7 +33,7 @@ def test_kmv():
         # Generowanie strumienia z N unikalnymi elementami
         stream = list(range(N))
         # Dodanie duplikatów do strumienia
-        stream.extend(random.choices(stream, k=N))
+        stream.extend(random.choices(stream, k=5*N))
         random.shuffle(stream)
         # Szacowanie liczności unikalnych elementów
         estimate = kmv_cardinality(stream, k)

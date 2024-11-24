@@ -66,13 +66,5 @@ int main() {
         printf("File renamed successfully.\n");
     }
 
-    // Unlink (delete) the file
-    // if (rpc_unlink("renamed_test.txt") < 0) {
-    //     printf("Failed to delete file\n");
-    //     return -1;
-    // } else {
-    //     printf("File deleted successfully.\n");
-    // }
-
     return 0;
 }

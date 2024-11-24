@@ -211,7 +211,6 @@ int main() {
         int n = recvfrom(sockfd, &request, sizeof(request), 0,
                          (struct sockaddr *)&client_addr, &addr_len);
         if (n > 0) {
-            // Handle request
             handle_request(sockfd, &client_addr, addr_len, &request);
         }
     }
