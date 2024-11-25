@@ -30,17 +30,14 @@ def test_kmv():
     k = 400
 
     for N in true_cardinalities:
-        # Generowanie strumienia z N unikalnymi elementami
         stream = list(range(N))
         # Dodanie duplikatów do strumienia
         stream.extend(random.choices(stream, k=5*N))
         random.shuffle(stream)
-        # Szacowanie liczności unikalnych elementów
         estimate = kmv_cardinality(stream, k)
         estimated_cardinalities.append(estimate)
         print(f"Prawdziwa liczność: {N}, Szacowana liczność: {estimate:.2f}")
 
-    # Wykres porównawczy
     plt.figure(figsize=(10, 6))
     plt.plot(true_cardinalities, estimated_cardinalities, marker='o', label='Szacowana liczność')
     plt.plot(true_cardinalities, true_cardinalities, linestyle='--', color='red', label='Prawdziwa liczność')
